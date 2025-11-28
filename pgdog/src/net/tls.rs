@@ -387,6 +387,11 @@ impl ServerCertVerifier for NoHostnameVerifier {
                 debug!("certificate validation successful (hostname mismatch ignored)");
                 Ok(ServerCertVerified::assertion())
             }
+            Err(rustls::Error::InvalidCertificate(rustls::CertificateError::NotValidForNameContext  { expected: _, presented: _ })) => {
+                // If the only error is hostname mismatch, that's fine for Certificate mode
+                debug!("certificate validation successful (hostname mismatch ignored)");
+                Ok(ServerCertVerified::assertion())
+            }
             Err(e) => {
                 debug!("certificate validation failed: {:?}", e);
                 Err(e)
